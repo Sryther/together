@@ -1,0 +1,52 @@
+{% extends 'layouts/master.html' %} {% block script %}
+<link rel="stylesheet" href="/assets/css/custom.css" /> {% endblock %} {% block body %}
+<div class="row">
+  {% if (user) %}
+    <h1>Bienvenue {{ user.displayName}} ! &#128512</h1>
+
+    {% if (session) %}
+      <h3>Vous avez déjà une session ouverte.</h3>
+      <p>Vous pouvez l'<a href="/sessions/{{ user.id }}">éditer en vous rendant dessus</a> ou bien la remplacer <a href="/sessions/create">en créant une nouvelle session</a>.</p>
+    {% else %}
+      <h3>Vous n'avez pas de session.</h3>
+      <p>Vous pouvez dès à présent rejoindre la session d'un ami ou créer la votre.</p>
+      <h2>
+        <center>
+          <a class="btn btn-primary" href="/sessions/create">Créer une session &#128521</a>
+        </center>
+      </h2>
+    {% endif %}
+  {% else %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="alert alert-info" role="alert">
+      Profitez un maximum de TOGETHER pendant cette période de confinement.
+    </div>
+    <div class="jumbotron">
+      <h2>Qu'est-ce que TOGETHER ?</h2>
+      <h3>
+        — C'est mieux entre amis &#128526
+      </h3>
+      <br>
+      <p>
+        TOGETHER est un service en ligne gratuit qui vous permet de <b>regarder des vidéos avec vos amis</b>. Rien d'exceptionnel jusque là, non ?
+      </p>
+      <p>
+        Mais, <b>il y a plus que ça</b> : TOGETHER <b>synchronise</b> la vidéo à tous vos amis présents dans votre session.
+      </p>
+      <br>
+      <h3>Qu'est-ce que ça signifie ?</h3>
+      <br>
+      <p>
+        Vous et vos amis verrons <b>au même moment</b>, <b>les mêmes images et sons que vous</b> de la vidéo que vous avez sélectionnée !
+      </p>
+      <br>
+      <hr>
+      <br>
+      <p>
+        Vous n'avez qu'à essayer ! Il suffit de <a href="/auth/signin">se connecter</a> et créer une session. &#128523
+      </p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

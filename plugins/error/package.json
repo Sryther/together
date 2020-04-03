@@ -1,0 +1,10 @@
+{
+    "name": "error",
+    "main": "error.js",
+    "plugin": {
+        "consumes": [],
+        "provides": [
+            "error"
+        ]
+    }
+}
