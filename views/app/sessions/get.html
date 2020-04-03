@@ -1,0 +1,117 @@
+{% extends '../../layouts/master.html' %}
+{% block script %}
+    <link rel="stylesheet" href="/assets/css/custom.css" />
+    <script src="/assets/js/moment.js"></script>
+    <script type="text/javascript">
+        var timerStart = Date.now();
+    </script>
+{% endblock %}
+{% block body %}
+    {% if (session) %}
+        <script src="/assets/js/socketio.js"></script>
+        <script type="text/javascript">
+            var curSession = '{{ session.user }}';
+            var curUser = '{{ user.id }}';
+            var socket = io('/sessions/{{ session.user }}');
+            socket.emit('welcome', '{{ user.id }}');
+
+            $("#shareLink").href = window.location;
+            $("#shareLink").innerHTML = window.location;
+        </script>
+        <script src="/assets/js/app/together.js"></script>
+        <h1>
+            <img src="/assets/img/{{ session.type }}.png" width="16" /> {{ session.name }}
+            {% if (session.user == user.id ) %}
+                <a href="/sessions/create" class="btn btn-primary pull-right">
+                    Modifier la session  <i class="fa fa-pencil fa-fw"></i>
+                </a>
+            {% endif %}
+        </h1>
+        <p>
+            Vidéo en cours : <a href="{{ session.url }}" target="_blank">{{ session.url }}</a>
+        </p>
+
+        <div class="row">
+            <div class="hidden-xs hidden-sm hidden-md col-lg-2">
+                <h4>Spectateurs <span id="numberWatchers" class="badge pull-right">{{ session.watchers.length }}</span></h4>
+                <ul class="list-group" id="watchers" style="max-height: 390px; height: 390px; min-height: 390px; overflow-y: auto; overflow-x: hidden;">
+                    {% for watcher in session.watchers %}
+                        <li class="list-group-item">
+                            <span class="pull-right"><a title="{{ watcher.displayName }}" target="_blank" href="/users/{{ watcher.id }}">{{ watcher.displayName }}</a></span> <img src="{{ watcher.image }}" width="16" />
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-7">
+                <center>
+                    {% if (session.type == 'youtube' ) %}
+                        <script>
+                          setInterval(setTime, 1000);
+                        </script>
+                        <div id="ytplayer"></div>
+                        {% if (session.user == user.id) %}
+                            <button type="button" class="btn" style="width: 213px" onClick="play()">
+                                <i class="fa fa-play fa-fw"></i>
+                            </button>
+                            <button type="button" class="btn" style="width: 213px" onClick="pause()">
+                                <i class="fa fa-pause fa-fw"></i>
+                            </button>
+                            <button type="button" class="btn" style="width: 213px" onClick="stop()">
+                                <i class="fa fa-step-backward fa-fw"></i>
+                            </button>
+                        {% else %}
+
+                        {% endif %}
+                    {% endif %}
+
+                </center>
+            </div>
+            <div class="visible-md-1"></div>
+            <div class="hidden-xs hidden-sm col-md-3 col-lg-3">
+                <div class="messenger-wrapper">
+                    <div id="inner" class="inner">
+                        <div id="content" class="content"></div>
+                    </div>
+                    <div id="bottom" class="messenger-bottom">
+                        <textarea id="m" class="input" style="overflow-x: hidden; overflow-y: auto"></textarea>
+                        <div id="send" class="send"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <p>Pour inviter des personnes à cette session :</p>
+            <ul>
+                <li>
+                    En partageant le lien : <a href="//{{ host }}/sessions/{{ user.id }}" id="shareLink">https://{{ host }}/sessions/{{ user.id }}</a>
+                </li>
+                <li>
+                    En donnant ce code : <pre style="display: inline-flex; padding: 2px">{{ user.id }}</pre>
+                </li>
+            </ul>
+            {% if (session.user != user.id) %}
+                <div>
+                    <p>Vous pouvez vous aussi <a href="/sessions/create" target="_blank">créer votre session</a> &#128512</p>
+                </div>
+            {% endif %}
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="alert alert-info" role="alert">
+            L'application n'est pas encore compatible avec toutes les tailles d'écrans.
+        </div>
+    {% elseif (id == user.id) %}
+        <h1>
+            Oh non ! &#128534
+        </h1>
+        <h3>Vous n'avez pas encore créé de session.</h3>
+        <br>
+        {% include 'create-button.html' %}
+    {% else %}
+        <h1>
+            Session introuvable !
+        </h1>
+    {% endif %}
+{% endblock %}

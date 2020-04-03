@@ -1,0 +1,22 @@
+module.exports = {
+  passport: {
+    facebook: {
+      id: '<project id>',
+      secret: '<project secret>',
+    },
+    google: {
+      id: '<project id>',
+      secret: '<project secret>',
+      apiKey: '<project key>',
+    },
+  },
+  mongodb: {
+    addr: '<database host>',
+  },
+  app: {
+    port: 3000,
+    secret: '<secret>',
+    host: '<host>',
+    isDev: false
+  },
+};

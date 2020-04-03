@@ -1,0 +1,13 @@
+{
+    "name": "socketManager",
+    "main": "socketManager.js",
+    "plugin": {
+        "consumes": [
+            "socket",
+            "sessions"
+        ],
+        "provides": [
+            "socketManager"
+        ]
+    }
+}

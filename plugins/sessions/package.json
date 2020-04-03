@@ -1,0 +1,12 @@
+{
+    "name": "sessions",
+    "main": "sessions.js",
+    "plugin": {
+        "consumes": [
+            "db"
+        ],
+        "provides": [
+            "sessions"
+        ]
+    }
+}

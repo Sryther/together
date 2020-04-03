@@ -1,0 +1,13 @@
+{
+    "name": "socket",
+    "main": "socket.js",
+    "plugin": {
+        "consumes": [
+            "sessions",
+            "users"
+        ],
+        "provides": [
+            "socket"
+        ]
+    }
+}

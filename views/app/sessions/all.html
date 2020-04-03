@@ -1,0 +1,44 @@
+{% extends '../../layouts/master.html' %}
+{% block script %}
+<script src="/assets/js/moment.js"></script>
+<script>
+  $(document).ready(function(){
+    $('table tr').click(function(){
+      window.location = $(this).attr('href');
+      return false;
+    });
+  });
+</script>
+{% endblock %}
+{% block body %}
+{% if (sessions) %}
+<h1>
+    Public sessions list
+</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>Nom</th>
+        <th>Type</th>
+        <th>En cours ?</th>
+        <th>Dernière mise à jour</th>
+    </tr>
+    {% for session in sessions %}
+    <tr class="row-link" href="/sessions/{{ session.user }}">
+        <td>{{ session.name }}</td>
+        <td><img src="/assets/img/{{ session.type }}.png" width="16"></img></td>
+        {% if (session.playing) %}
+        <td>Oui</td>
+        {% else %}
+        <td>Non</td>
+        {% endif %}
+        <td>Il y a {{ session.lastUpdateHumanized }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<h1>
+    Aucune session disponible !
+</h1>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+  app:
+    image: 127.0.0.1:5000/together
+    volumes:
+      - /mnt/web/together/app:/app
+    networks:
+      - proxy-all
+      - together
+    environment:
+      - VIRTUAL_HOST=together.sryther.fr
+      - VIRTUAL_PORT=8000
+      - LETSENCRYPT_HOST=together.sryther.fr
+      - LETSENCRYPT_EMAIL=paul.rey@sryther.fr
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8000"
+        - "traefik.domain=together.sryther.fr"
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.hostname == riv-3
+
+  db:
+    image: mvertes/alpine-mongo
+    networks:
+      - together
+    volumes:
+      - /mnt/web/together/data/db:/data/db
+    deploy
+      labels:
+        - "traefik.enable=false"
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.hostname == riv-3
+
+networks:
+  proxy-all:
+    external: true 
+  together:

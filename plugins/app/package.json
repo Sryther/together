@@ -1,0 +1,17 @@
+{
+    "name": "app",
+    "main": "app.js",
+    "plugin": {
+        "consumes": [
+            "web",
+            "error",
+            "users",
+            "auth",
+            "sessions",
+            "socketManager"
+        ],
+        "provides": [
+            "app"
+        ]
+    }
+}

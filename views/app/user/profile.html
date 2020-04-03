@@ -1,0 +1,20 @@
+
+{% extends '../../layouts/master.html' %}
+{% block script %}
+    <link rel="stylesheet" href="/assets/css/profile.css" media="screen" title="no title" charset="utf-8">
+{% endblock %}
+{% block body %}
+<div class="profile">
+    <img src="{{ user.image }}" class="profile-img">
+    <div class="profile-text">
+        <h1 class="profile-name">{{ user.displayName }}</h1>
+        <span class="profile-title">Connecté en utilisant : {{ (user.provider + "").charAt(0).toUpperCase() + user.provider.slice(1) || 'local' }}</span>
+        <br/>
+        <span class="profile-title">{{ user.bio || "Pas d'informations"}}</span>
+        <hr>
+        <p>
+            <a href="/sessions/{{ user.id }}">Ma session</a>, ou code à donner à rentrer dans la recherche : <pre>{{ user.id }}</pre>
+        </p>
+    </div>
+</div>
+{% endblock %}

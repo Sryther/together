@@ -1,0 +1,12 @@
+{
+    "name": "auth",
+    "main": "auth.js",
+    "plugin": {
+        "consumes": [
+          "users"
+        ],
+        "provides": [
+            "auth"
+        ]
+    }
+}

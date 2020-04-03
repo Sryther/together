@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}TOGETHER{% endblock %}</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
+    <link rel="stylesheet" href="/assets/css/sticky-footer.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/emojify.js/1.1.0/css/basic/emojify.min.css" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/emojify.js/1.1.0/js/emojify.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    {% block script %}
+    <!-- Scripts are loaded here -->
+    {% endblock %}
+</head>
+
+<body>
+    <nav class="navbar navbar-default" style="border-radius: 0; margin-bottom: 0;">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">TOGETHER</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav pull-right">
+                    {% if (!user) %}
+                    <li>
+                        <a href="/auth/signin">
+                            Se connecter <i class="fa fa-angle-right fa-fw"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <form class="navbar-form" role="search" action="/sessions" method="post">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" name="session" id="sessionId" class="form-control" placeholder="Session à rejoindre" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i class="fa fa-search fa-fw"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </li>
+                    <li>
+                        <a href="/sessions/create">
+                            Créer une session
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/sessions/{{ user.id }}">
+                            Ma session
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/users/profile">
+                            Profil
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/auth/signout">
+                            Se déconnecter
+                        </a>
+                    </li>
+                    {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <div class="container">
+        <br> {% block body %} Pas de contenu {% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted">
+                TOGETHER est un service gratuit - Fait avec <i class="fa fa-heart fa-fw" style="color: red;"></i> et
+                <i class="fa fa-coffee fa-fw"></i>
+                par <a target="_blank" href="https://www.sryther.fr">Paul Rey</a>
+            </p>
+        </div>
+    </footer>
+    <script>
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+            emojify.setConfig({
+                img_dir: '/assets/img/emoji'
+            });
+        });
+    </script>
+</body>
+
+</html>
