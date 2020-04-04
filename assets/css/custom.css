@@ -139,6 +139,10 @@ body {
     color: #ffffff;
 }
 
+.message-wrapper .text-wrapper {
+    overflow-wrap: break-word;
+}
+
 .message-wrapper.them .text-wrapper {
     background: #F44336;
 }

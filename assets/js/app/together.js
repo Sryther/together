@@ -210,9 +210,7 @@ function setTime() {
 // Events
 function onVideo(v) {
   if (video !== '' && v.id !== lastVideo) {
-    setTimeout(function () {
-      location.reload();
-    }, 500);
+    location.reload();
   }
 
   video = v.id;
