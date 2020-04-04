@@ -1,6 +1,6 @@
 {% extends '../../layouts/master.html' %}
 {% block script %}
-<script src="/assets/js/moment.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script>
   $(document).ready(function(){
     $('table tr').click(function(){
@@ -26,7 +26,7 @@
     {% for session in sessions %}
     <tr class="row-link" href="/sessions/{{ session.user }}">
         <td>{{ session.name }}</td>
-        <td><img src="/assets/img/{{ session.type }}.png" width="16"></img></td>
+        <td><img src="/assets/img/{{ session.type }}.png" width="16" /></td>
         {% if (session.playing) %}
         <td>Oui</td>
         {% else %}

@@ -1,14 +1,14 @@
 {% extends '../../layouts/master.html' %}
 {% block script %}
     <link rel="stylesheet" href="/assets/css/custom.css" />
-    <script src="/assets/js/moment.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script type="text/javascript">
         var timerStart = Date.now();
     </script>
 {% endblock %}
 {% block body %}
     {% if (session) %}
-        <script src="/assets/js/socketio.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
         <script type="text/javascript">
             var curSession = '{{ session.user }}';
             var curUser = '{{ user.id }}';
