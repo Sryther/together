@@ -154,6 +154,8 @@ module.exports = function (options, imports, register) {
               i.emit('video', {
                 id: getYouTubeID(session.url),
                 time: session.time,
+                name: session.name,
+                url: session.url,
                 playing: session.playing,
                 lastUpdate: session.lastUpdate,
                 duration: session.duration
@@ -161,6 +163,8 @@ module.exports = function (options, imports, register) {
             } else {
               socket.emit('video', {
                 id: getYouTubeID(session.url),
+                url: session.url,
+                name: session.name,
                 time: session.time,
                 playing: session.playing,
                 lastUpdate: session.lastUpdate,

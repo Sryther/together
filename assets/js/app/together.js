@@ -6,6 +6,9 @@ tag.src = 'https://www.youtube.com/iframe_api?version=3';
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+var audio = new Audio('/assets/sounds/knock_brush.ogg');
+var muted = false;
+
 // Replace the 'ytplayer' element with an <iframe> and
 // YouTube player after the API code downloads.
 var player = null;
@@ -33,6 +36,18 @@ var watchers = {
 };
 
 $(document).ready(onDocumentReady);
+
+function mute() {
+  muted = !muted;
+
+  if (muted) {
+    $("#mute").removeClass('fa-bell');
+    $("#mute").addClass('fa-bell-slash');
+  } else {
+    $("#mute").removeClass('fa-bell-slash');
+    $("#mute").addClass('fa-bell');
+  }
+}
 
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('ytplayer', {
@@ -210,7 +225,16 @@ function setTime() {
 // Events
 function onVideo(v) {
   if (video !== '' && v.id !== lastVideo) {
-    location.reload();
+    $("#session-name").html(v.name);
+    $("#url-video").attr("href", v.url);
+    $("#url-video").html(v.url);
+
+    onMessage({
+      user: bot,
+      msg: 'La vidéo a été modifiée.'
+    });
+
+    socket.emit('welcome', curUser);
   }
 
   video = v.id;
@@ -327,6 +351,11 @@ function onMessage(data) {
     emojify.run(document.getElementById('mess-' + idMessage));
 
     idMessage++;
+
+    if (sender !== 'me' && !muted) {
+      audio.volume = 0.2;
+      audio.play();
+    }
   }
 }
 

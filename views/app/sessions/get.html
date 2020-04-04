@@ -21,15 +21,18 @@
         </script>
         <script src="/assets/js/app/together.js"></script>
         <h1>
-            <img src="/assets/img/{{ session.type }}.png" width="16" /> {{ session.name }}
+            <img src="/assets/img/{{ session.type }}.png" width="16" /> <span id="session-name">{{ session.name }}</span>
+            <a href="#" class="btn btn-default pull-right" onClick="mute()" title="Son des notifications">
+                <i id="mute" class="fa fa-bell fa-fw"></i>
+            </a>
             {% if (session.user == user.id ) %}
-                <a href="/sessions/create" class="btn btn-primary pull-right">
+                <a href="/sessions/create" class="btn btn-primary pull-right" style="margin-right: 1em;">
                     Modifier la session  <i class="fa fa-pencil fa-fw"></i>
                 </a>
             {% endif %}
         </h1>
         <p>
-            Vidéo en cours : <a href="{{ session.url }}" target="_blank">{{ session.url }}</a>
+            Vidéo en cours : <a href="{{ session.url }}" target="_blank" id="url-video">{{ session.url }}</a>
         </p>
 
         <div class="row">
