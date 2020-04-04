@@ -10,10 +10,11 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // YouTube player after the API code downloads.
 var player = null;
 var video = '';
-var time = 0;
+var lastVideo = '';
 var lastUpdate = 0;
 var playing = false;
 var target = null;
+var duration = 0;
 
 var idMessage = 0;
 
@@ -40,6 +41,7 @@ function onYouTubeIframeAPIReady() {
     playerVars: {
       autoplay: 0,
       controls: 1,
+      autohide: 0,
       disablekb: 1,
       fs: 1,
       showinfo: 0,
@@ -63,10 +65,19 @@ function onStateChange(event) {
     event.target.pauseVideo();
   } else {
     var currentTime = event.target.getCurrentTime()
-    if (currentTime < time - 1 || currentTime > time + 1) {
-      event.target.seekTo(time);
+
+    if (event.target && curUser !== curSession) {
+      if (currentTime < time - 1 || currentTime > time + 1) {
+        event.target.seekTo(time);
+      }
+      event.target.playVideo();
+    } else {
+      var curTime = Math.round(target.getCurrentTime());
+      if (time !== null && curTime !== 0 && curTime !== null && curTime !== undefined) {
+        time = curTime;
+        socket.emit('time', curTime);
+      }
     }
-    event.target.playVideo();
   }
 }
 
@@ -88,19 +99,31 @@ function sendMessage() {
  */
 function loadVideo() {
   if (target && video) {
-    if (lastUpdate) {
+    if (lastUpdate && playing) {
       var now = Date.now() / 1000;
       var last = lastUpdate / 1000;
       var timer = timerStart / 1000;
       var deltaStartPage = now - timer;
       var delta = (now - last) + deltaStartPage;
-      time = time + delta;
+      time = Math.round(time + delta);
     }
 
-    target.loadVideoById(video, time, 'default');
+    if (duration !== 0 && time > duration) {
+      time = duration;
+      playing = false;
 
-    if (playing) {
-      onPlay(time);
+      if ($("#pause-button") && $("#play-button")) {
+        $("#pause-button").css("display", "none");
+        $("#play-button").css("display", "inline-block");
+      }
+    }
+
+    if (time !== null) {
+      target.loadVideoById(video, time, 'default');
+
+      if (playing) {
+        onPlay(time);
+      }
     }
   }
 }
@@ -137,40 +160,67 @@ function onDocumentReady() {
 }
 
 function play() {
-  if (target && curUser === curSession) {
-    socket.emit('play', target.getCurrentTime());
+  if (target && curUser === curSession) {;
+    socket.emit('play', time)
+
+    if ($("#pause-button") && $("#play-button")) {
+      $("#pause-button").css("display", "inline-block");
+      $("#play-button").css("display", "none");
+    }
   }
 }
 
 function pause() {
   if (target && curUser === curSession) {
-    socket.emit('pause', target.getCurrentTime());
+    socket.emit('pause', Math.round(target.getCurrentTime()));
+
+    if ($("#pause-button") && $("#play-button")) {
+      $("#pause-button").css("display", "none");
+      $("#play-button").css("display", "inline-block");
+    }
   }
 }
 
 function stop() {
   if (target && curUser === curSession) {
     socket.emit('stop', 0);
+
+    if ($("#pause-button") && $("#play-button")) {
+      $("#pause-button").css("display", "none");
+      $("#play-button").css("display", "inline-block");
+    }
   }
 }
 
 function setTime() {
   if (target) {
     if (curUser === curSession) {
-      socket.emit('time', target.getCurrentTime());
+      if (target.getDuration() !== 0) {
+        socket.emit('duration', target.getDuration());
+      }
+
+      var curTime = Math.round(target.getCurrentTime());
+      if (time !== null && curTime !== 0 && curTime !== null && curTime !== undefined) {
+        socket.emit('time', curTime);
+      }
     }
   }
 }
 
 // Events
 function onVideo(v) {
-  if (video !== '') {
-    location.reload();
+  if (video !== '' && v.id !== lastVideo) {
+    setTimeout(function () {
+      location.reload();
+    }, 500);
   }
+
   video = v.id;
+  lastVideo = v.id;
   time = v.time;
   playing = v.playing;
   lastUpdate = v.lastUpdate;
+  duration = v.duration;
   loadVideo();
 }
 
@@ -181,12 +231,16 @@ function onPlay(time) {
     target.seekTo(time, true);
     target.playVideo();
 
-    if (!$('#playButton').hasClass('btn-success')) {
-      $('#playButton').addClass('btn-success');
+    if (target.getDuration() !== 0) {
+      socket.emit('duration', target.getDuration());
     }
 
-    $('#pauseButton').removeClass('btn-warning');
-    $('#stopButton').removeClass('btn-danger');
+    if (curUser === curSession) {
+      if ($("#pause-button") && $("#play-button")) {
+        $("#pause-button").css("display", "inline-block");
+        $("#play-button").css("display", "none");
+      }
+    }
   }
 }
 
@@ -195,13 +249,17 @@ function onPause() {
 
   if (target) {
     target.pauseVideo();
-    $('#playButton').removeClass('btn-success');
 
-    if (!$('#pauseButton').hasClass('btn-warning')) {
-      $('#pauseButton').addClass('btn-warning');
+    if (target.getDuration() !== 0) {
+      socket.emit('duration', target.getDuration());
     }
 
-    $('#stopButton').removeClass('btn-danger');
+    if (curUser === curSession) {
+      if ($("#pause-button") && $("#play-button")) {
+        $("#pause-button").css("display", "none");
+        $("#play-button").css("display", "inline-block");
+      }
+    }
   }
 }
 
@@ -211,16 +269,26 @@ function onStop() {
 
   if (target) {
     target.stopVideo();
-    $('#playButton').removeClass('btn-success');
-    $('#pauseButton').removeClass('btn-warning');
-    if (!$('#stopButton').hasClass('btn-danger')) {
-      $('#stopButton').addClass('btn-danger');
+
+    if (curUser === curSession) {
+      if ($("#pause-button") && $("#play-button")) {
+        $("#pause-button").css("display", "none");
+        $("#play-button").css("display", "inline-block");
+      }
     }
   }
 }
 
 function onTime(t) {
+  var curTime = time;
+
   time = t + 1;
+  if (curTime > time + 1 || curTime < time - 1) {
+    console.log('update!')
+    if (target) {
+      target.seekTo(time);
+    }
+  }
 }
 
 function onList(session) {
@@ -265,7 +333,6 @@ function onMessage(data) {
 }
 
 function buildMessage(id, message, sender, user) {
-  console.log(watchers[user.id])
   return '<div class="message-wrapper ' + sender + '" id="mess-' + id + '">' +
     '<div class="circle-wrapper animated bounceIn"><img src="' + watchers[user.id].image + '" class="circle-wrapper"' +
     ' title="' + user.displayName + '"/></div>' +

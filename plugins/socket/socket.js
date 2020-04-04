@@ -16,21 +16,24 @@ module.exports = function (options, imports, register) {
     var usersConnected = [];
     var playing = false;
     var time = 0;
+    var duration = 0;
 
     i.on('connection', function (socket) {
       socket.on('welcome', function (msg) {
         usersController.get(msg, function (err, watcher) {
-          sessionsController.addWatcher(user, watcher, function () {
-            // Save users
-            usersConnected.push({
-              user: watcher,
-              socket: socket,
-            });
-            refreshList();
-            refreshVideo();
-            i.emit('message', {
-              user: { id: "bot", displayName: "Bot", image: "/assets/img/bot.png" },
-              msg: watcher.displayName + ' vient de rejoindre la session.',
+          sessionsController.removeWatcher(user, watcher, function () {
+            sessionsController.addWatcher(user, watcher, function () {
+              // Save users
+              usersConnected.push({
+                user: watcher,
+                socket: socket,
+              });
+              refreshList();
+              refreshVideo();
+              i.emit('message', {
+                user: {id: "bot", displayName: "Bot", image: "/assets/img/bot.png"},
+                msg: watcher.displayName + ' vient de rejoindre la session.',
+              });
             });
           });
         });
@@ -41,30 +44,27 @@ module.exports = function (options, imports, register) {
 
         if (index !== -1) {
           if (usersConnected[index].user.id === user) {
-            time = 0;
             playing = false;
-            updateSession(function () {
-              refreshVideo(function () {
-                sessionsController.removeWatcher(user, usersConnected[index].user, function () {
-                  usersConnected.splice(index, 1);
-                  refreshList();
-                });
-              });
-            });
+
+            i.emit('doPause', { });
+
             i.emit('message', {
               user: { id: "bot", displayName: "Bot", image: "/assets/img/bot.png" },
-              msg: usersConnected[index].user.displayName + ' a quitté la session. Il était le propriétaire de cette session.',
+              msg: usersConnected[index].user.displayName + ' a quitté la session. Il était le propriétaire de cette session. La vidéo est en pause.',
             });
           } else {
-            sessionsController.removeWatcher(user, usersConnected[index].user, function () {
-              usersConnected.splice(index, 1);
-              refreshList();
-            });
             i.emit('message', {
               user: { id: "bot", displayName: "Bot", image: "/assets/img/bot.png" },
               msg: usersConnected[index].user.displayName + ' a quitté la session.',
             });
           }
+
+          updateSession(function () {
+            sessionsController.removeWatcher(user, usersConnected[index].user, function () {
+              usersConnected.splice(index, 1);
+              refreshList();
+            });
+          });
         } else {
           refreshList();
         }
@@ -134,6 +134,11 @@ module.exports = function (options, imports, register) {
         }
       });
 
+      socket.on('duration', function (d) {
+        duration = d;
+        updateSession(function (err) {});
+      });
+
       function refreshList() {
         sessionsController.get(user, function (err, session) {
           i.emit('list', session);
@@ -142,7 +147,7 @@ module.exports = function (options, imports, register) {
 
       function refreshVideo(callback) {
         sessionsController.get(user, function (err, session) {
-          var index = _.findIndex(usersConnected, function (o) { return o.socket == socket; });
+          var index = _.findIndex(usersConnected, function (o) { return o.socket === socket; });
 
           sessionsController.get(user, function (err, session) {
             if (usersConnected[index].user.id === user) {
@@ -151,6 +156,7 @@ module.exports = function (options, imports, register) {
                 time: session.time,
                 playing: session.playing,
                 lastUpdate: session.lastUpdate,
+                duration: session.duration
               });
             } else {
               socket.emit('video', {
@@ -158,6 +164,7 @@ module.exports = function (options, imports, register) {
                 time: session.time,
                 playing: session.playing,
                 lastUpdate: session.lastUpdate,
+                duration: session.duration,
               });
             }
 
@@ -178,6 +185,7 @@ module.exports = function (options, imports, register) {
         var newSession = _.cloneDeep(session);
         newSession.playing = playing;
         newSession.time = time;
+        newSession.duration = duration;
         sessionsController.update(newSession, function (err) {
           if (err) {
             console.error(err);

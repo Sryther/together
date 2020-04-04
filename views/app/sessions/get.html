@@ -14,6 +14,7 @@
             var curUser = '{{ user.id }}';
             var socket = io('/sessions/{{ session.user }}');
             socket.emit('welcome', '{{ user.id }}');
+            var time = parseInt('{{ session.time }}') || 0;
 
             $("#shareLink").href = window.location;
             $("#shareLink").innerHTML = window.location;
@@ -50,13 +51,13 @@
                         </script>
                         <div id="ytplayer"></div>
                         {% if (session.user == user.id) %}
-                            <button type="button" class="btn" style="width: 213px" onClick="play()">
+                            <button type="button" id="play-button" class="btn btn-success" style="width: 426px;" onClick="play()" title="Lecture">
                                 <i class="fa fa-play fa-fw"></i>
                             </button>
-                            <button type="button" class="btn" style="width: 213px" onClick="pause()">
+                            <button type="button" id="pause-button" class="btn btn-warning" style="width: 426px; display: none;" onClick="pause()" title="Pause">
                                 <i class="fa fa-pause fa-fw"></i>
                             </button>
-                            <button type="button" class="btn" style="width: 213px" onClick="stop()">
+                            <button type="button" class="btn btn-default" style="width: 213px" onClick="stop()" title="Remettre à zéro">
                                 <i class="fa fa-step-backward fa-fw"></i>
                             </button>
                         {% else %}

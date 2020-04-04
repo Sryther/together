@@ -17,6 +17,7 @@ module.exports = function (options, imports, register) {
     lastUpdate: Number,
     watchers: Array,
     private: Boolean,
+    duration: Number,
   });
   sessionSchema.plugin(findOrCreate);
 
@@ -59,6 +60,7 @@ module.exports = function (options, imports, register) {
         lastUpdate: Date.now(),
         watchers: sess.watchers,
         private: sess.private,
+        duration: 0,
       };
 
       Session.update({
@@ -83,6 +85,7 @@ module.exports = function (options, imports, register) {
         lastUpdate: Date.now(),
         watchers: sess.watchers,
         private: sess.private,
+        duration: sess.duration,
       };
 
       Session.update({
@@ -145,6 +148,7 @@ module.exports = function (options, imports, register) {
       lastUpdate: Date.now(),
       watchers: [],
       private: private,
+      duration: 0,
     };
 
     sessions.createOrUpdate(s, function (err) {
