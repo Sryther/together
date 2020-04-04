@@ -156,7 +156,7 @@ module.exports = function (options, imports, register) {
     });
   });
 
-  router.post('/', ensure.ensureLoggedIn('/auth/signin'), function (req, res) {
+  router.post('/', function (req, res) {
     if (req.body.session !== null && req.body.session !== undefined && req.body.session !== "" && req.body.session.match(/^[a-zA-Z0-9]{5,}/) !== null) {
       res.redirect('/sessions/' + req.body.session);
     } else {

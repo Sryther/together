@@ -30,6 +30,9 @@ var appConfig = [
     packagePath: './plugins/server',
     port: config.app.port,
   },
+  {
+    packagePath: './plugins/errors',
+  }
 ];
 
 // Create relative tree

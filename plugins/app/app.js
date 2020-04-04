@@ -16,6 +16,7 @@ module.exports = function(options, imports, register) {
     var sessions = imports.sessions;
     var web = imports.web;
     var auth = imports.auth;
+    var errors = imports.errors;
     var socketManager = imports.socketManager;
 
     var allowCrossDomain = function(req, res, next) {
@@ -63,6 +64,11 @@ module.exports = function(options, imports, register) {
     app.use("/users", users.router);
     app.use("/sessions", sessions.router);
     app.use("/auth", auth.router);
+    app.use("/errors", errors.router);
+
+    app.use(function(req, res, next) {
+        res.redirect('/errors/404');
+    });
 
     register(null, {
         "app": app

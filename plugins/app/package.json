@@ -8,6 +8,7 @@
             "users",
             "auth",
             "sessions",
+            "errors",
             "socketManager"
         ],
         "provides": [
