@@ -53,7 +53,7 @@ module.exports = function (options, imports, register) {
             });
             i.emit('message', {
               user: { id: "bot", displayName: "Bot", image: "/assets/img/bot.png" },
-              msg: usersConnected[index].user.displayName + ' à quitté la session. Il était le propriétaire de cette session.',
+              msg: usersConnected[index].user.displayName + ' a quitté la session. Il était le propriétaire de cette session.',
             });
           } else {
             sessionsController.removeWatcher(user, usersConnected[index].user, function () {
@@ -62,7 +62,7 @@ module.exports = function (options, imports, register) {
             });
             i.emit('message', {
               user: { id: "bot", displayName: "Bot", image: "/assets/img/bot.png" },
-              msg: usersConnected[index].user.displayName + ' à quitté la session.',
+              msg: usersConnected[index].user.displayName + ' a quitté la session.',
             });
           }
         } else {

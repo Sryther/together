@@ -50,7 +50,7 @@ module.exports = function(options, imports, register) {
         },
         update: function(user) {
             User.findOne({
-                id: req.params.id
+                id: user.id
             }, function(err, u) {
                 if (!err) {
                     if (u === null) {

@@ -16,6 +16,8 @@ module.exports = function (options, imports, register) {
   var GOOGLE_CLIENT_ID = pass.google.id;
   var GOOGLE_CLIENT_SECRET = pass.google.secret;
 
+  var request = require('request').defaults({ encoding: null });
+
   var FACEBOOK_SALT = "facebookSalt";
   var GOOGLE_SALT = "googleSalt";
 
@@ -36,20 +38,27 @@ module.exports = function (options, imports, register) {
             return callback(pictureFb.error || {});
           }
 
-          var u = {
-            id: crypto.createHash('md5').update(FACEBOOK_SALT + profile.id).digest('hex'),
-            username: profile.username,
-            displayName: userFb.name,
-            gender: userFb.gender,
-            profileUrl: profile.profileUrl,
-            provider: profile.provider,
-            verified: userFb.verified,
-            bio: null,
-            image: pictureFb.data.url,
-          };
+          request.get(pictureFb.data.url, function (error, response) {
+            var imageData = "";
+            if (!error && response.statusCode === 200) {
+              imageData = "data:" + response.headers["content-type"] + ";base64," + new Buffer(response.body).toString('base64');
+            }
 
-          User.findOrCreate(u, function (err, user) {
-            return callback(err, user);
+            var u = {
+              id: crypto.createHash('md5').update(FACEBOOK_SALT + profile.id).digest('hex'),
+              username: profile.username,
+              displayName: userFb.name,
+              gender: userFb.gender,
+              profileUrl: profile.profileUrl,
+              provider: profile.provider,
+              verified: userFb.verified,
+              bio: null,
+              image: imageData,
+            };
+
+            User.findOrCreate({ id: u.id }, u, {upsert: true}, function (err, user) {
+              return callback(err, user);
+            });
           });
         });
       });
@@ -59,29 +68,32 @@ module.exports = function (options, imports, register) {
   passport.use(new GoogleStrategy({
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: 'https://' + app.host + '/auth/google/callback',
+      callbackURL: (options.app.isDev ? 'http://localhost:' + options.app.port : 'https://' + app.host) + '/auth/google/callback',
     },
     function(accessToken, refreshToken, profile, callback) {
-      var img = profile._json.image;
-      if (img !== undefined) {
-          img = img.url;
-      }else {
-          img = '';
-      }
-      var u = {
-        id: crypto.createHash('md5').update(GOOGLE_SALT + profile.id).digest('hex'),
-        username: profile.displayName,
-        displayName: profile.displayName,
-        gender: profile.gender,
-        profileUrl: profile._json.url,
-        provider: profile.provider,
-        verified: profile._json.verified,
-        bio: profile._json.tagline,
-        image: img,
-      };
+      var img = profile._json.picture;
+      var imageData = '';
 
-      User.findOrCreate(u, function (err, user) {
-        return callback(err, user);
+      request.get(img, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+          imageData = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
+        }
+
+        var u = {
+          id: crypto.createHash('md5').update(GOOGLE_SALT + profile.id).digest('hex'),
+          username: profile.displayName,
+          displayName: profile.displayName,
+          gender: profile.gender,
+          profileUrl: profile._json.url,
+          provider: profile.provider,
+          verified: profile._json.verified,
+          bio: profile._json.tagline,
+          image: img,
+        };
+
+        User.findOrCreate({ id: u.id }, u, {upsert: true}, function (err, user) {
+          return callback(err, user);
+        });
       });
     }
   ));
