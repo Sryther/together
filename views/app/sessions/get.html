@@ -115,7 +115,11 @@
         {% include 'create-button.html' %}
     {% else %}
         <h1>
-            Session introuvable !
+            Session introuvable ! &#128565
         </h1>
+        <h3>Avez-vous bien entré le code que l'on vous a partagé ?</h3>
+        <p>
+            La session n'existe pas, vous pouvez retenter votre recherche en vérifiant le code partagé. <a href="/">Retour à l'accueil</a>
+        </p>
     {% endif %}
 {% endblock %}
