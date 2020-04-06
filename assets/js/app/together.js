@@ -330,7 +330,7 @@ function onList(session) {
     watchers[value.id] = value;
 
     $('#watchers').append('<li class="list-group-item" id="user-' + id + '">' +
-      '<span class="pull-right"><a title="' + name + '" target="_blank" href="/users/' + id + '">'+
+      '<span class="pull-right" style="max-width: calc(100% - 16px); height: 16px; max-height: 16px"><a title="' + name + '" target="_blank" href="/users/' + id + '" style="margin-left: 5px; display: block; white-space: nowrap; overflow: hidden; width: 100%; max-width: 100%; text-overflow: ellipsis; max-height: 16px; height: 16px">'+
       displayName + '</a></span> <img src="' + value.image + '" style="width: 16px; border-radius: 50%;" /></li>');
   });
 
