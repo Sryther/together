@@ -197,3 +197,33 @@ body {
 table tr.row-link {
     cursor: pointer;
 }
+
+.btn-primary {
+    background-color: rgb(94, 0, 255);
+    color: #fff;
+    border-color: rgba(94, 0, 255, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: rgb(94, 0, 255);
+    color: #fff;
+    border-color: rgba(94, 0, 255, 0.2);
+}
+
+.text-primary {
+    color: rgb(94, 0, 255);
+}
+
+a, a:hover {
+    color: rgb(94, 0, 255);
+}
+
+.navbar-nav > li.navbar-hover:hover {
+    background-color: rgba(161, 106, 255, 0.2);
+}
+
+.alert-info {
+    background-color: rgba(161, 106, 255, 0.2);
+    border-color: rgba(161, 106, 255, 0.5);
+    color: rgb(94, 0, 255);
+}

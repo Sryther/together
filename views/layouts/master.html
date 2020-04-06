@@ -42,28 +42,28 @@
                         </form>
                     </li>
                     {% if (!user) %}
-                    <li>
-                        <a href="/auth/signin">
-                            Se connecter <i class="fa fa-angle-right fa-fw"></i>
+                    <li class="navbar-hover">
+                        <a href="/auth/signin" style="color: rgb(94, 0, 255)">
+                            Se connecter
                         </a>
                     </li>
                     {% else %}
-                    <li>
+                    <li class="navbar-hover">
                         <a href="/sessions/create">
                             Créer une session
                         </a>
                     </li>
-                    <li>
+                    <li class="navbar-hover">
                         <a href="/sessions/{{ user.id }}">
                             Ma session
                         </a>
                     </li>
-                    <li>
+                    <li class="navbar-hover">
                         <a href="/users/profile">
                             Profil
                         </a>
                     </li>
-                    <li>
+                    <li class="navbar-hover">
                         <a href="/auth/signout">
                             Se déconnecter
                         </a>
