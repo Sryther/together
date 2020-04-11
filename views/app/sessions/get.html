@@ -15,6 +15,7 @@
             var socket = io('/sessions/{{ session.user }}');
             socket.emit('welcome', '{{ user.id }}');
             var time = parseInt('{{ session.time }}') || 0;
+            var originHost = '{{ host }}';
 
             $("#shareLink").href = window.location;
             $("#shareLink").innerHTML = window.location;
@@ -53,18 +54,65 @@
                           setInterval(setTime, 1000);
                         </script>
                         <div id="ytplayer"></div>
-                        {% if (session.user == user.id) %}
-                            <button type="button" id="play-button" class="btn btn-success" style="width: 426px;" onClick="play()" title="Lecture">
-                                <i class="fa fa-play fa-fw"></i>
-                            </button>
-                            <button type="button" id="pause-button" class="btn btn-warning" style="width: 426px; display: none;" onClick="pause()" title="Pause">
-                                <i class="fa fa-pause fa-fw"></i>
-                            </button>
-                            <button type="button" class="btn btn-default" style="width: 213px" onClick="stop()" title="Remettre à zéro">
-                                <i class="fa fa-step-backward fa-fw"></i>
-                            </button>
-                        {% else %}
-
+                        <div class="controls">
+                            <div class="basic-controls">
+                                <div class="player-ctn">
+                                    <span id="current-time"></span>
+                                    <div class="player"></div>
+                                    <span id="max-time"></span>
+                                </div>
+                            </div>
+                            <div class="basic-controls">
+                                <div class="volume-ctn">
+                                    <i class="fa fa-volume-down"></i>
+                                    <div class="volume"></div>
+                                    <i class="fa fa-volume-up"></i>
+                                </div>
+                                <div>
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Qualité <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" id="quality-drop">
+                                            <li id="quality-auto">
+                                                <a href="#" class="text-primary">Auto</a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+                                            <li id="quality-highres" class="disabled">
+                                                <a href="#">4K</a>
+                                            </li>
+                                            <li id="quality-hd1080" class="disabled">
+                                                <a href="#">1080p</a>
+                                            </li>
+                                            <li id="quality-hd720" class="disabled">
+                                                <a href="#">720p</a>
+                                            </li>
+                                            <li id="quality-large" class="disabled">
+                                                <a href="#">480p</a>
+                                            </li>
+                                            <li id="quality-medium" class="disabled">
+                                                <a href="#">360p</a></li>
+                                        </ul>
+                                    </div>
+                                    <button type="button" id="fs-button" class="btn btn-default" onclick="fs()">
+                                        <i class="fa fa-expand fa-fw"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% if (session.user == user.id) %}
+                            <div class="master-controls">
+                                <button type="button" id="play-button" class="btn btn-success" onClick="play()" title="Lecture">
+                                    <i class="fa fa-play fa-fw"></i>
+                                </button>
+                                <button type="button" id="pause-button" class="btn btn-warning" style="display: none;" onClick="pause()" title="Pause">
+                                    <i class="fa fa-pause fa-fw"></i>
+                                </button>
+                                <button type="button" class="btn btn-default" onClick="stop()" id="stop-button" title="Remettre à zéro">
+                                    <i class="fa fa-step-backward fa-fw"></i>
+                                </button>
+                            </div>
+                            {% else %}
+                        </div>
                         {% endif %}
                     {% endif %}
 
@@ -99,10 +147,6 @@
                 </div>
             {% endif %}
         </div>
-        <br>
-        <br>
-        <br>
-        <br>
         <div class="alert alert-info" role="alert">
             <p>Vous devez activer le JavaScript sur cette page pour pouvoir utiliser pleinement l'application.</p>
             <p>L'application n'est pas encore compatible avec toutes les tailles d'écrans.</p>

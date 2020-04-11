@@ -14,6 +14,7 @@ var appConfig = [
   }, {
     packagePath: './plugins/sessions',
     app: config.app,
+    googleApi: config.passport.google,
   }, {
     packagePath: './plugins/socket',
   }, {

@@ -1,11 +1,14 @@
 module.exports = function (options, imports, register) {
   var mongoose = imports.db;
   var app = options.app;
+  var googleApi = options.googleApi;
   var findOrCreate = require('mongoose-findorcreate');
   var _ = require('lodash');
   var ensure = require('connect-ensure-login');
   var router = require('express').Router();
+  var request = require('request');
   var moment = require('moment');
+  var momentDurationFormatSetup = require("moment-duration-format");
 
   var sessionSchema = mongoose.Schema({
     user: String,
@@ -19,6 +22,9 @@ module.exports = function (options, imports, register) {
     private: Boolean,
     duration: Number,
   });
+
+  momentDurationFormatSetup(moment);
+
   sessionSchema.plugin(findOrCreate);
 
   var Session = mongoose.model('Session', sessionSchema);
@@ -125,7 +131,6 @@ module.exports = function (options, imports, register) {
   };
 
   router.get('/create', ensure.ensureLoggedIn('/auth/signin'), function (req, res) {
-    var id = req.params.id;
     res.render('app/sessions/create', {
       user: req.user,
     });
@@ -138,21 +143,39 @@ module.exports = function (options, imports, register) {
     var url = req.body.url;
     var private = req.body.private;
 
-    var s = {
-      user: user,
-      name: name,
-      type: type,
-      url: url,
-      playing: false,
-      time: 0,
-      lastUpdate: Date.now(),
-      watchers: [],
-      private: private,
-      duration: 0,
-    };
+    var videoId = url.includes('v=') ? url.split('v=')[1] : '';
+    var ampersandPosition = videoId.indexOf('&');
+    if (ampersandPosition !== -1) {
+      videoId = videoId.substring(0, ampersandPosition);
+    }
 
-    sessions.createOrUpdate(s, function (err) {
-      res.redirect('/sessions/' + req.user.id);
+    var youtubeQueryUrl = "https://www.googleapis.com/youtube/v3/videos?id=" + videoId + " &part=contentDetails&key=" + googleApi.apiKey;
+
+    request(youtubeQueryUrl, function (err, response, body) {
+      var videoDuration = null;
+      if (body.error !== null && body.error !== undefined) {
+        var videoInfo = body.items[0];
+        var complexDuration = videoInfo.contentDetails.duration;
+
+        videoDuration = parseISO8601Duration(complexDuration);
+      }
+
+      var s = {
+        user: user,
+        name: name,
+        type: type,
+        url: url,
+        playing: false,
+        time: 0,
+        lastUpdate: Date.now(),
+        duration: videoDuration,
+        watchers: [],
+        private: private,
+      };
+
+      sessions.createOrUpdate(s, function (err) {
+        res.redirect('/sessions/' + req.user.id);
+      });
     });
   });
 
@@ -199,4 +222,21 @@ module.exports = function (options, imports, register) {
       router: router,
     },
   });
+
+  function parseISO8601Duration(iso8601Duration) {
+    var iso8601DurationRegex = /(-)?P(?:([.,\d]+)Y)?(?:([.,\d]+)M)?(?:([.,\d]+)W)?(?:([.,\d]+)D)?T(?:([.,\d]+)H)?(?:([.,\d]+)M)?(?:([.,\d]+)S)?/;
+
+    var matches = iso8601Duration.match(iso8601DurationRegex);
+
+    return {
+      sign: matches[1] === undefined ? '+' : '-',
+      years: matches[2] === undefined ? 0 : matches[2],
+      months: matches[3] === undefined ? 0 : matches[3],
+      weeks: matches[4] === undefined ? 0 : matches[4],
+      days: matches[5] === undefined ? 0 : matches[5],
+      hours: matches[6] === undefined ? 0 : matches[6],
+      minutes: matches[7] === undefined ? 0 : matches[7],
+      seconds: matches[8] === undefined ? 0 : matches[8]
+    };
+  }
 };

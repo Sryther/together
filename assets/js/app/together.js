@@ -2,7 +2,7 @@
 
 // Load the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
-tag.src = 'https://www.youtube.com/iframe_api?version=3';
+tag.src = 'https://www.youtube.com/iframe_api';
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -18,6 +18,7 @@ var lastUpdate = 0;
 var playing = false;
 var target = null;
 var duration = 0;
+var currentQuality = 'auto';
 
 var idMessage = 0;
 
@@ -34,6 +35,25 @@ var bot = {
 var watchers = {
   'bot': bot
 };
+
+var initDurationMoment = moment.duration(time, "seconds");
+$("#current-time").html(moment.utc(initDurationMoment.as('milliseconds')).format('HH:mm:ss'));
+
+setInterval(function () {
+  var durationMoment = time || null;
+  if (target && target.getCurrentTime() !== 0) {
+    var currentTime = target.getCurrentTime();
+    durationMoment = moment.duration(Math.round(currentTime), "seconds");
+  } else {
+    if (time) {
+      durationMoment = moment.duration(time, "seconds");
+    } else {
+      durationMoment = moment.duration(0, "seconds");
+    }
+  }
+
+  $("#current-time").html(moment.utc(durationMoment.as('milliseconds')).format('HH:mm:ss'));
+}, 1000);
 
 $(document).ready(onDocumentReady);
 
@@ -55,13 +75,20 @@ function onYouTubeIframeAPIReady() {
     width: '640',
     playerVars: {
       autoplay: 0,
-      controls: 1,
+      controls: 0,
       autohide: 0,
       disablekb: 1,
       fs: 1,
       showinfo: 0,
+      showsearch: 0,
+      enablejsapi: 1,
+      hl: 'fr',
       iv_load_policy: 3,
-      cc_load_policy: 1
+      cc_load_policy: 0,
+      loop: 0,
+      modestbranding: 1,
+      origin: originHost,
+      rel: 0
     },
     events: {
       onReady: onPlayerReady,
@@ -72,14 +99,17 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
   target = event.target;
+
   loadVideo();
 }
 
 function onStateChange(event) {
+  setQualityControls();
+
   if (!playing) {
     event.target.pauseVideo();
   } else {
-    var currentTime = event.target.getCurrentTime()
+    var currentTime = event.target.getCurrentTime();
 
     if (event.target && curUser !== curSession) {
       if (currentTime < time - 1 || currentTime > time + 1) {
@@ -104,12 +134,25 @@ function sendMessage() {
   }
 }
 
+function setQualityControls() {
+  var availableQualities = target.getAvailableQualityLevels();
+  if (availableQualities !== undefined) {
+    var allQualities = ['highres', 'hd1080', 'hd720', 'large', 'medium', 'small'];
+    for (var quality of allQualities) {
+      var li = $("#quality-" + quality);
+      if (availableQualities.indexOf(quality) === -1) {
+        li.addClass("disabled");
+        li.removeAttr("onclick");
+      } else {
+        li.removeClass("disabled");
+        li.attr("onclick", "changeQuality('"+quality+"')");
+      }
+    }
+  }
+}
+
 /**
  * Load a video using a player and an url
- * @param  {String}  video   Youtube Video URL
- * @param  {Number}  time    Time of the video
- * @param  {Number}  since
- * @param  {Boolean} playing Is the video playing
  * @return {null}
  */
 function loadVideo() {
@@ -133,8 +176,26 @@ function loadVideo() {
       }
     }
 
+    $(".volume").slider({
+      min: 0,
+      max: 100,
+      value: 100,
+      range: "min",
+      slide: function(event, ui) {
+        setVolume(ui.value);
+      }
+    });
+
+    function setVolume(myVolume) {
+      if (target) {
+        target.setVolume(myVolume);
+      }
+    }
+
     if (time !== null) {
       target.loadVideoById(video, time, 'default');
+
+      setQualityControls();
 
       if (playing) {
         onPlay(time);
@@ -176,7 +237,7 @@ function onDocumentReady() {
 
 function play() {
   if (target && curUser === curSession) {;
-    socket.emit('play', time)
+    socket.emit('play', time);
 
     if ($("#pause-button") && $("#play-button")) {
       $("#pause-button").css("display", "inline-block");
@@ -207,6 +268,36 @@ function stop() {
   }
 }
 
+
+function fs() {
+  if (target) {
+    var requestFullScreen = target.getIframe().requestFullScreen || target.getIframe().mozRequestFullScreen || target.getIframe().webkitRequestFullScreen;
+    if (requestFullScreen) {
+      requestFullScreen.bind(target.getIframe())();
+    }
+  }
+}
+
+function changeQuality(quality) {
+  if (target) {
+    currentQuality = quality;
+
+    for (var href of $("#quality-drop a")) {
+      $(href).removeClass("text-primary");
+    }
+    $("#quality-" + quality + " > a").addClass("text-primary");
+
+    target.setPlaybackQuality(quality);
+  }
+}
+
+function onPlayerPlaybackQualityChange(event) {
+  var playbackQuality = event.target.getPlaybackQuality();
+  if (playbackQuality !== currentQuality) {
+    event.target.setPlaybackQuality(currentQuality);
+  }
+}
+
 function setTime() {
   if (target) {
     if (curUser === curSession) {
@@ -219,6 +310,7 @@ function setTime() {
         socket.emit('time', curTime);
       }
     }
+    buildPlayer();
   }
 }
 
@@ -253,8 +345,12 @@ function onPlay(time) {
     target.seekTo(time, true);
     target.playVideo();
 
+    setTimeout(setQualityControls, 500);
+
     if (target.getDuration() !== 0) {
       socket.emit('duration', target.getDuration());
+
+      buildPlayer();
     }
 
     if (curUser === curSession) {
@@ -306,7 +402,6 @@ function onTime(t) {
 
   time = t + 1;
   if (curTime > time + 1 || curTime < time - 1) {
-    console.log('update!')
     if (target) {
       target.seekTo(time);
     }
@@ -357,6 +452,25 @@ function onMessage(data) {
       audio.play();
     }
   }
+}
+
+function buildPlayer() {
+  $(".player").slider({
+    min: 0,
+    max: duration,
+    value: time,
+    range: "min",
+    slide: function(event, ui) {
+      if (curUser === curSession) {
+        socket.emit('time', ui.value);
+      } else {
+        $(".player").slider('value', time);
+      }
+    }
+  });
+
+  var durationMoment = moment.duration(Math.round(duration), "seconds");
+  $("#max-time").html(moment.utc(durationMoment.as('milliseconds')).format('HH:mm:ss'));
 }
 
 function buildMessage(id, message, sender, user) {
