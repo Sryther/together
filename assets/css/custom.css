@@ -370,3 +370,30 @@ a, a:hover {
 .volume.theatre .ui-slider-handle {
     margin-left: -3px;
 }
+
+html.theatre {
+    background-color: rgb(15, 15, 17);
+}
+
+#main-container.theatre {
+    background-color: rgb(15, 15, 17);
+    color: #fff;
+}
+
+#messenger-ctn.theatre, #messenger-ctn.theatre .messenger-wrapper {
+    height: 720px;
+    max-height: 720px;
+    min-height: 720px;
+}
+
+#messenger-ctn.theatre .messenger-wrapper {
+    border: none;
+}
+
+#messenger-ctn.theatre .inner, #messenger-ctn.theatre #inner, #messenger-ctn.theatre .input, #messenger-ctn.theatre .messenger-bottom {
+    background-color: rgb(24, 24, 27);
+}
+
+#main-container.theatre .text-wrapper {
+    color: #fff;
+}

@@ -340,6 +340,8 @@ function togetherApp(sessionInfo, socket) {
     const volumeCtn = $(".volume");
     const volumeSlider = $(".volume .ui-slider-handle");
     const controlsCtn = $(".controls");
+    const htmlEl = $("html");
+    const messengerCtn = $("#messenger-ctn");
 
     const iframe = $(playerInfo.target.getIframe());
 
@@ -355,6 +357,9 @@ function togetherApp(sessionInfo, socket) {
 
       mainContainer.removeClass("container");
       mainContainer.addClass("container-fluid");
+      mainContainer.addClass("theatre");
+      htmlEl.addClass("theatre");
+      messengerCtn.addClass("theatre");
 
       volumeCtn.addClass("theatre");
       volumeSlider.addClass("theatre");
@@ -366,8 +371,6 @@ function togetherApp(sessionInfo, socket) {
       iconSvg.attr('style', 'fill: #fff');
 
       watchersContainerEl.hide();
-
-      messageWrapper.attr("style", "height: 720px; max-height: 720px; min-height: 720px");
 
       shareCtn.hide();
       alertScreenCtn.hide();
@@ -387,6 +390,9 @@ function togetherApp(sessionInfo, socket) {
 
       mainContainer.addClass("container");
       mainContainer.removeClass("container-fluid");
+      mainContainer.removeClass("theatre");
+      htmlEl.removeClass("theatre");
+      messengerCtn.removeClass("theatre");
 
       volumeCtn.removeClass("theatre");
       volumeSlider.removeClass("theatre");
@@ -399,8 +405,6 @@ function togetherApp(sessionInfo, socket) {
 
       iframe.attr('width', '640px');
       iframe.attr('height', '390px');
-
-      messageWrapper.attr("style", "height: 390px; max-height: 390px; min-height: 390px");
 
       shareCtn.show();
       alertScreenCtn.show();
