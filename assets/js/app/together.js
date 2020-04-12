@@ -264,6 +264,7 @@ function togetherApp(sessionInfo, socket) {
     socket.on('doTime', onTime);
     socket.on('list', onList);
     socket.on('message', onMessage);
+    socket.on('updateDuration', onUpdateDuration);
 
     playerInfo.player = new YT.Player('ytplayer', {
       height: '390',
@@ -608,6 +609,14 @@ function togetherApp(sessionInfo, socket) {
         audio.play().then(r => {
         });
       }
+    }
+  }
+
+  function onUpdateDuration(duration) {
+    if (playerInfo.duration !== duration) {
+      playerInfo.duration = duration;
+
+      buildPlayer();
     }
   }
 

@@ -135,8 +135,12 @@ module.exports = function (options, imports, register) {
       });
 
       socket.on('duration', function (d) {
-        duration = d;
-        updateSession(function (err) {});
+        if (duration !== d) {
+          duration = d;
+          updateSession(function (err) {});
+
+          i.emit('updateDuration', duration);
+        }
       });
 
       function refreshList() {
