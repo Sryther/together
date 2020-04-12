@@ -12,7 +12,7 @@
     "type": "git"
   },
   "scripts": {
-    "start": "nodemon --ignore 'assets/js/app/together.js'"
+    "start": "nodemon --config nodemon.json"
   },
   "license": "MIT",
   "dependencies": {
