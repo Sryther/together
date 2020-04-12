@@ -275,6 +275,7 @@ a, a:hover {
     background: #555;
     border-radius: 15px;
     left: 90px;
+    cursor: pointer;
 }
 
 .player .ui-slider-range-min {

@@ -527,8 +527,26 @@ function togetherApp(sessionInfo, socket) {
         } else {
           playerEl.slider('value', playerInfo.time);
         }
-      }
+
+        const div = $(ui.handle).data("bs.tooltip").$tip[0];
+        const pos = $.extend({}, $(ui.handle).offset(), { width: $(ui.handle).get(0).offsetWidth,
+          height: $(ui.handle).get(0).offsetHeight
+        });
+
+        const actualWidth = div.offsetWidth;
+
+        const offset = {left: pos.left + pos.width / 2 - actualWidth / 2}
+        $(div).offset(offset);
+
+        $(div).find(".tooltip-inner").text(moment.utc(moment.duration(Math.round(ui.value), "seconds").as('milliseconds')).format('HH:mm:ss'));
+      },
     });
+
+    playerEl.find(".ui-slider-handle:first")
+        .tooltip({
+          title: moment.utc(moment.duration(Math.round(playerEl.slider("value")), "seconds").as('milliseconds')).format('HH:mm:ss'),
+          trigger: "hover focus"
+        });
 
     const durationMoment = moment.duration(Math.round(playerInfo.duration), "seconds");
     maxTimeEl.html(moment.utc(durationMoment.as('milliseconds')).format('HH:mm:ss'));
