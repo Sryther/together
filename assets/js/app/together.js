@@ -353,6 +353,9 @@ function togetherApp(sessionInfo, socket) {
 
       titleCtn.hide();
 
+      messengerCtn.removeClass("col-md-3");
+      messengerCtn.addClass("hidden-md");
+
       sessionCtn.removeClass("col-xs-12").removeClass("col-sm-12").removeClass("col-md-8").removeClass("col-lg-7");
       sessionCtn.addClass("col-xs-10").addClass("col-sm-10").addClass("col-md-9").addClass("col-lg-9");
 
@@ -388,6 +391,9 @@ function togetherApp(sessionInfo, socket) {
 
       sessionCtn.removeClass("col-xs-10").removeClass("col-sm-10").removeClass("col-md-9").removeClass("col-lg-9");
       sessionCtn.addClass("col-xs-12").addClass("col-sm-12").addClass("col-md-8").addClass("col-lg-7");
+
+      messengerCtn.addClass("col-md-3");
+      messengerCtn.removeClass("hidden-md");
 
       mainContainer.addClass("container");
       mainContainer.removeClass("container-fluid");
