@@ -31,6 +31,7 @@ function togetherApp(sessionInfo, socket) {
     playing: false,
     duration: 0,
     currentQuality: 'auto',
+    theatreMode: false,
   };
 
   const currentSessionInfo = {
@@ -47,6 +48,7 @@ function togetherApp(sessionInfo, socket) {
   const currentHost = sessionInfo.originHost;
 
   // Elements
+  const mainContainer = $("#main-container");
   const currentTimeEl = $("#current-time");
   const muteBtnEl = $("#mute-notifications");
   const muteIconEl = $("#mute-icon");
@@ -66,6 +68,11 @@ function togetherApp(sessionInfo, socket) {
   const contentEl = $("#content");
   const playerEl = $(".player");
   const fullscreenBtnEl = $("#fs-button");
+  const theatreButton = $("#theatre-button");
+  const watchersContainerEl = $("#wachers-ctn");
+  const messageWrapper = $(".messenger-wrapper");
+  const shareCtn = $(".share-ctn");
+  const alertScreenCtn = $("#alert-screen");
 
   // First timer
   const initDurationMoment = moment.duration(playerInfo.time, "seconds");
@@ -242,7 +249,9 @@ function togetherApp(sessionInfo, socket) {
     }
 
     fullscreenBtnEl.click(toFullscreen);
-    muteBtnEl.click(mute)
+    muteBtnEl.click(mute);
+
+    theatreButton.click(toTheatre);
 
     sendEl.prop('disabled', false);
 
@@ -317,10 +326,93 @@ function togetherApp(sessionInfo, socket) {
     }
   }
 
+  function toTheatre() {
+    playerInfo.theatreMode = !playerInfo.theatreMode;
+    const iconSvg = theatreButton.find('svg');
+
+    const titleCtn = $("#title-ctn");
+    const sessionCtn = $("#session-ctn");
+    const footer = $(".footer");
+
+    const playerCtn2 = $(".player-ctn");
+    const playerEl2 = $(".player");
+    const basicControls = $(".basic-controls");
+    const volumeCtn = $(".volume");
+    const volumeSlider = $(".volume .ui-slider-handle");
+    const controlsCtn = $(".controls");
+
+    const iframe = $(playerInfo.target.getIframe());
+
+    if (playerInfo.theatreMode) {
+      theatreButton.addClass("active");
+      theatreButton.addClass("btn-primary");
+      theatreButton.removeClass("btn-default");
+
+      titleCtn.hide();
+
+      sessionCtn.removeClass("col-xs-12").removeClass("col-sm-12").removeClass("col-md-8").removeClass("col-lg-7");
+      sessionCtn.addClass("col-xs-10").addClass("col-sm-10").addClass("col-md-9").addClass("col-lg-9");
+
+      mainContainer.removeClass("container");
+      mainContainer.addClass("container-fluid");
+
+      volumeCtn.addClass("theatre");
+      volumeSlider.addClass("theatre");
+      basicControls.addClass("theatre");
+      playerCtn2.addClass("theatre");
+      playerEl2.addClass("theatre");
+      controlsCtn.addClass("theatre");
+
+      iconSvg.attr('style', 'fill: #fff');
+
+      watchersContainerEl.hide();
+
+      messageWrapper.attr("style", "height: 720px; max-height: 720px; min-height: 720px");
+
+      shareCtn.hide();
+      alertScreenCtn.hide();
+      footer.hide();
+
+      iframe.attr('width', '1280px');
+      iframe.attr('height', '720px');
+    } else {
+      theatreButton.removeClass("active");
+      theatreButton.removeClass("btn-primary");
+      theatreButton.addClass("btn-default");
+
+      titleCtn.show();
+
+      sessionCtn.removeClass("col-xs-10").removeClass("col-sm-10").removeClass("col-md-9").removeClass("col-lg-9");
+      sessionCtn.addClass("col-xs-12").addClass("col-sm-12").addClass("col-md-8").addClass("col-lg-7");
+
+      mainContainer.addClass("container");
+      mainContainer.removeClass("container-fluid");
+
+      volumeCtn.removeClass("theatre");
+      volumeSlider.removeClass("theatre");
+      basicControls.removeClass("theatre");
+      playerCtn2.removeClass("theatre");
+      playerEl2.removeClass("theatre");
+      controlsCtn.removeClass("theatre");
+
+      iconSvg.attr('style', '');
+
+      iframe.attr('width', '640px');
+      iframe.attr('height', '390px');
+
+      messageWrapper.attr("style", "height: 390px; max-height: 390px; min-height: 390px");
+
+      shareCtn.show();
+      alertScreenCtn.show();
+      footer.show();
+
+      watchersContainerEl.show();
+    }
+  }
 
   function toFullscreen() {
     if (playerInfo.target) {
-      const iframe = playerInfo.getIframe();
+      const iframe = playerInfo.target.getIframe();
       var requestFullScreen = iframe.requestFullScreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullScreen;
       if (requestFullScreen) {
         requestFullScreen.bind(iframe)();

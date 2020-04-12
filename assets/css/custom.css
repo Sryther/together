@@ -49,6 +49,7 @@ body {
     right: 0;
     height: 64px;
     background: #ffffff;
+    border-top: solid 1px rgba(0,0,0,0.1);
     /* box-shadow: 0px -3px 3px 0px rgba(50, 50, 50, 0.1); */
 }
 .messenger-bottom .input {
@@ -79,7 +80,7 @@ body {
     width: 42px;
     border-radius: 50%;
     border: 0;
-    background: #F44336;
+    background: rgb(94, 0, 255);
     color: #ffffff;
     bottom: 10px;
     right: 10px;
@@ -202,7 +203,13 @@ table tr.row-link {
     border-color: rgba(94, 0, 255, 0.2);
 }
 
-.btn-primary:hover {
+.btn-primary.active, .btn-primary.active:focus, .btn-primary:active, .open > .dropdown-toggle.btn-primary {
+    background-color: rgb(60, 0, 168);
+    color: #fff;
+    border-color: rgba(94, 0, 255, 0.2);
+}
+
+.btn-primary:hover,.btn-primary.active:hover {
     background-color: rgb(94, 0, 255);
     color: #fff;
     border-color: rgba(94, 0, 255, 0.2);
@@ -252,7 +259,7 @@ a, a:hover {
     width: 100px;
 }
 
-.player-ctn {
+.player-ctn, .player-ctn-time {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -340,13 +347,26 @@ a, a:hover {
 }
 
 #stop-button {
-    width: 200px;
+    width: calc(100% / 3.2);
 }
 
 #play-button, #pause-button {
-    width: 426px;
+    width: calc(100% / 1.5);
 }
 
 .share-ctn {
     margin-top: 20px;
+}
+
+.player-ctn.theatre, .basic-controls.theatre, .player.theatre, .controls.theatre {
+    width: 1280px;
+}
+
+.volume.theatre {
+    margin-left: 15px;
+    left: auto;
+}
+
+.volume.theatre .ui-slider-handle {
+    margin-left: -3px;
 }
