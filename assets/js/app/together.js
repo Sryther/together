@@ -15,7 +15,7 @@ function togetherApp(sessionInfo, socket) {
     id: 'bot',
     hidden: true,
     image: '/assets/img/bot.png',
-    displayName: 'TOGETHER Bot',
+    displayName: 'Bot',
     username: 'bot'
   };
 
@@ -501,7 +501,7 @@ function togetherApp(sessionInfo, socket) {
 
     const message = buildMessage(currentSessionInfo.lastMessageId, data.msg, sender, data.user);
     if (message !== '') {
-      contentEl.append($(message));
+      contentEl.append(message);
       innerEl.scrollTop(innerEl.prop('scrollHeight'));
       emojify.run(document.getElementById('mess-' + currentSessionInfo.lastMessageId));
 
@@ -539,12 +539,14 @@ function togetherApp(sessionInfo, socket) {
         $(div).offset(offset);
 
         $(div).find(".tooltip-inner").text(moment.utc(moment.duration(Math.round(ui.value), "seconds").as('milliseconds')).format('HH:mm:ss'));
-      },
+      }
     });
+
+    playerEl.find(".ui-slider-handle:first").attr('data-original-title', moment.utc(moment.duration(Math.round(playerInfo.time), "seconds").as('milliseconds')).format('HH:mm:ss'));
 
     playerEl.find(".ui-slider-handle:first")
         .tooltip({
-          title: moment.utc(moment.duration(Math.round(playerEl.slider("value")), "seconds").as('milliseconds')).format('HH:mm:ss'),
+          title: moment.utc(moment.duration(Math.round(playerInfo.time), "seconds").as('milliseconds')).format('HH:mm:ss'),
           trigger: "hover focus"
         });
 
@@ -553,10 +555,40 @@ function togetherApp(sessionInfo, socket) {
   }
 
   function buildMessage(id, message, sender, user) {
-    return '<div class="message-wrapper ' + sender + '" id="mess-' + id + '">' +
-        '<div class="circle-wrapper animated bounceIn"><img src="' + currentSessionInfo.watchers[user.id].image + '" class="circle-wrapper"' +
-        ' title="' + user.displayName + '"/></div>' +
-        '<div class="text-wrapper">' + message + '</div>' +
-        '</div>';
+    const mainDiv = $('<div />', {
+      class: "message-wrapper " + sender,
+      id: "mess-" + id
+    });
+
+    const wrapperDiv = $('<div />', {
+      class: "circle-wrapper animated bounceIn",
+      title: currentSessionInfo.watchers[user.id].displayName + ' à ' + moment().format('HH:mm:ss')
+    });
+
+    if (sender === 'them') {
+      wrapperDiv.tooltip({
+        placement: 'right',
+        trigger: 'hover focus'
+      });
+    }
+
+    const imgDiv = $('<img />', {
+      src: currentSessionInfo.watchers[user.id].image,
+      class: 'circle-wrapper',
+      title: user.displayName
+    });
+
+    const textWrapper = $('<div />', {
+      class: 'text-wrapper',
+      html: message
+    });
+
+    wrapperDiv.append(imgDiv);
+
+    mainDiv.append(wrapperDiv);
+    mainDiv.append(textWrapper)
+
+
+    return mainDiv;
   }
 }

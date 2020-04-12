@@ -30,12 +30,12 @@
         </script>
         <h1>
             <img src="/assets/img/{{ session.type }}.png" width="16" /> <span id="session-name">{{ session.name }}</span>
-            <a href="#" class="btn btn-default pull-right" id="mute-notifications" title="Son des notifications">
-                <i id="mute-icon" class="fa fa-bell fa-fw"></i>
+            <a href="#" class="btn btn-default pull-right" id="mute-notifications" data-toggle="tooltip" data-placement="top" title="Son des notifications">
+                <i id="mute-icon" class="fas fa-bell fa-fw"></i>
             </a>
             {% if (session.user == user.id ) %}
                 <a href="/sessions/create" class="btn btn-primary pull-right" style="margin-right: 1em;">
-                    Modifier la session  <i class="fa fa-pencil fa-fw"></i>
+                    Modifier la session  <i class="fas fa-pencil-alt fa-fw"></i>
                 </a>
             {% endif %}
         </h1>
@@ -59,18 +59,20 @@
                     {% if (session.type == 'youtube' ) %}
                         <div id="ytplayer"></div>
                         <div class="controls">
-                            <div class="basic-controls">
+                            <div class="player-controls" style="margin: 0;">
                                 <div class="player-ctn">
-                                    <span id="current-time"></span>
                                     <div class="player"></div>
+                                </div>
+                                <div class="player-ctn" style="justify-content: space-between; width: 100%; margin-top: 5px">
+                                    <span id="current-time"></span>
                                     <span id="max-time"></span>
                                 </div>
                             </div>
                             <div class="basic-controls">
                                 <div class="volume-ctn">
-                                    <i class="fa fa-volume-down"></i>
+                                    <i class="fas fa-volume-down"></i>
                                     <div class="volume"></div>
-                                    <i class="fa fa-volume-up"></i>
+                                    <i class="fas fa-volume-up"></i>
                                 </div>
                                 <div>
                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -98,28 +100,30 @@
                                                 <a href="#">360p</a></li>
                                         </ul>
                                     </div>
-                                    <button type="button" id="fs-button" class="btn btn-default">
-                                        <i class="fa fa-expand fa-fw"></i>
+                                    <button type="button" id="theatre-button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Mode théatre" style="display: inline-flex; align-items: center">
+                                        <svg class="tw-icon__svg fa-fw" width="100%" height="20px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px"><g><path fill-rule="evenodd" d="M2 15V5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2zm2 0V5h7v10H4zm9 0h3V5h-3v10z" clip-rule="evenodd"></path></g></svg>
+                                    </button>
+                                    <button type="button" id="fs-button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Plein écran">
+                                        <i class="fas fa-expand fa-fw"></i>
                                     </button>
                                 </div>
                             </div>
                             {% if (session.user == user.id) %}
                             <div class="master-controls">
-                                <button type="button" id="play-button" class="btn btn-success" title="Lecture">
-                                    <i class="fa fa-play fa-fw"></i>
+                                <button type="button" id="play-button" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Lecture">
+                                    <i class="fas fa-play fa-fw"></i>
                                 </button>
-                                <button type="button" id="pause-button" class="btn btn-warning" style="display: none;" title="Pause">
-                                    <i class="fa fa-pause fa-fw"></i>
+                                <button type="button" id="pause-button" class="btn btn-warning" style="display: none;" data-toggle="tooltip" data-placement="top" title="Pause">
+                                    <i class="fas fa-pause fa-fw"></i>
                                 </button>
-                                <button type="button" class="btn btn-default" id="stop-button" title="Remettre à zéro">
-                                    <i class="fa fa-step-backward fa-fw"></i>
+                                <button type="button" class="btn btn-default" id="stop-button" data-toggle="tooltip" data-placement="top" title="Remettre à zéro">
+                                    <i class="fas fa-step-backward fa-fw"></i>
                                 </button>
                             </div>
                             {% else %}
                         </div>
                         {% endif %}
                     {% endif %}
-
                 </center>
             </div>
             <div class="visible-md-1"></div>
@@ -135,7 +139,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="share-ctn">
             <p>Pour inviter des personnes à cette session :</p>
             <ul>
                 <li>

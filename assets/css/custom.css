@@ -119,9 +119,9 @@ body {
 .message-wrapper .text-wrapper {
     padding: 10px;
     min-height: 42px;
-    width: 60%;
+    width: calc(100% - 62px);
     margin: 0 10px;
-    box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
+    box-shadow: 0px 1px 0px 0px rgba(161, 106, 255, 0.2);
     border-radius: 2px;
     font-weight: 300;
     position: relative;
@@ -144,12 +144,12 @@ body {
 }
 
 .message-wrapper.them .text-wrapper {
-    background: #F44336;
+    background: rgb(94, 0, 255);
 }
 
 .message-wrapper.them .text-wrapper:before {
     border-width: 0 10px 10px 0;
-    border-color: transparent #F44336 transparent transparent;
+    border-color: transparent rgb(94, 0, 255) transparent transparent;
     position: absolute;
     top: 0;
     left: -9px;
@@ -159,11 +159,11 @@ body {
     color: #333333;
 }
 .message-wrapper.me .text-wrapper {
-    background: #f2f2f2;
+    background: rgba(161, 106, 255, 0.2);
 }
 .message-wrapper.me .text-wrapper:before {
     border-width: 10px 10px 0 0;
-    border-color: #f2f2f2 transparent transparent transparent;
+    border-color: rgba(161, 106, 255, 0.2) transparent transparent transparent;
     position: absolute;
     top: 0;
     right: -9px;
@@ -172,7 +172,6 @@ body {
 @media (max-width: 560px) {
     .messenger-wrapper {
         width: 100%;
-        height: 100%;
         height: 100vh;
         top: 0;
         left: 0;
@@ -180,7 +179,6 @@ body {
         transform: translateX(0);
     }
     .messenger-wrapper .inner {
-        height: 100%;
         height: 100vh;
     }
 }
@@ -268,13 +266,16 @@ a, a:hover {
     width: 8px;
 }
 
+.player-controls {
+    display: flex;
+    flex-direction: column;
+}
+
 .player {
-    width: 500px;
+    width: 640px;
     height: 5px;
     position: absolute;
     background: #555;
-    border-radius: 15px;
-    left: 90px;
     cursor: pointer;
 }
 
@@ -283,7 +284,6 @@ a, a:hover {
     height: 3px;
     background: rgb(122, 43, 255);
     border: none;
-    border-radius: 10px;
     outline: none;
     position: absolute;
 }
@@ -345,4 +345,8 @@ a, a:hover {
 
 #play-button, #pause-button {
     width: 426px;
+}
+
+.share-ctn {
+    margin-top: 20px;
 }
