@@ -18,6 +18,22 @@ module.exports = function(options, imports, register) {
         }
     });
 
+    router.get("/policy", function(req, res) {
+        if (req.user) {
+            sessions.controller.get(req.user.id, function (err, session) {
+                res.render('guest/policy', {
+                    user: req.user,
+                    session: err ? null : session
+                });
+            });
+        } else {
+            res.render('guest/policy', {
+                user: req.user,
+                session: null
+            });
+        }
+    });
+
     register(null, {
         "web": {
             router: router
